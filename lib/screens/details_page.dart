@@ -78,18 +78,18 @@ class _DetailsPageState extends State<DetailsPage> {
                             color: const Color(0xff0B0B45),
                             shape: const StadiumBorder(),
                             onPressed: () {
-                              quantity++;
+                              if (quantity > 1) quantity--;
                               setState(() {});
-                              print(quantity);
                             },
                             child: const Text(
-                              '+',
+                              '-',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                           Container(
                             width: 50,
                             child: TextField(
+                              textAlign: TextAlign.center,
                               onChanged: (value) {
                                 quantity = int.parse(value);
                                 setState(() {});
@@ -103,11 +103,12 @@ class _DetailsPageState extends State<DetailsPage> {
                             color: const Color(0xff0B0B45),
                             shape: const StadiumBorder(),
                             onPressed: () {
-                              if (quantity > 1) quantity--;
+                              quantity++;
                               setState(() {});
+                              print(quantity);
                             },
                             child: const Text(
-                              '-',
+                              '+',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -129,6 +130,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             shape: const StadiumBorder(),
                             onPressed: () {
                               addToCart();
+                              showMessage(msg: "Succesefully added to cart");
                             },
                             child: const Text(
                               'Buy Now',
@@ -160,6 +162,25 @@ class _DetailsPageState extends State<DetailsPage> {
       'price': widget.productDetails['price'],
       'rating': widget.productDetails['rating'],
       'title': widget.productDetails['title'],
+      'quantity': quantityController.text
     });
+  }
+
+  showMessage({required String msg}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('warning!'.toUpperCase()),
+            content: Text(msg),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('ok'))
+            ],
+          );
+        });
   }
 }

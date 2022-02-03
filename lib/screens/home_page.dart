@@ -188,7 +188,12 @@ class _HomePageState extends State<HomePage> {
                                               MaterialButton(
                                                 color: const Color(0xff880061),
                                                 shape: const StadiumBorder(),
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  addToCart(index: index);
+                                                  showMessage(
+                                                      msg:
+                                                          "Succesfully adde to cart");
+                                                },
                                                 child: const Text(
                                                   'Buy now',
                                                   style: TextStyle(
@@ -238,5 +243,38 @@ class _HomePageState extends State<HomePage> {
       });
       print(items);
     }
+  }
+
+  void addToCart({required int index}) {
+    // int price = int.parse(widget.productDetails['price'] * quantity);
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    firestore.collection('users-cart').add({
+      'catagory': items[index]['catagory'],
+      'description': items[index]['description'],
+      'image': items[index]['image'],
+      'price': items[index]['price'],
+      'rating': items[index]['rating'],
+      'title': items[index]['title'],
+      'quantity': '1'
+    });
+  }
+
+  showMessage({required String msg}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('warning!'.toUpperCase()),
+            content: Text(msg),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('ok'))
+            ],
+          );
+        });
   }
 }
