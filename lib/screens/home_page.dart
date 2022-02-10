@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                                                   addToCart(index: index);
                                                   showMessage(
                                                       msg:
-                                                          "Succesfully adde to cart");
+                                                          "Succesfully added to cart");
                                                 },
                                                 child: const Text(
                                                   'Buy now',
@@ -265,8 +265,7 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('warning!'.toUpperCase()),
-            content: Text(msg),
+            title: Text(msg),
             actions: [
               TextButton(
                   onPressed: () {

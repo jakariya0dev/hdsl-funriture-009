@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hdsl_furniture/screens/sign_up_page.dart';
 import 'package:hdsl_furniture/screens/store_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hdsl_furniture/user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -89,8 +91,7 @@ class _LoginPageState extends State<LoginPage> {
               shape: const StadiumBorder(),
               color: Colors.blueAccent,
               onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const StorePage()));
+                userSignIn();
               },
               child: const Text('Log in'),
             ),
@@ -115,5 +116,47 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  userSignIn() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: mailController.text, password: passwordController.text);
+
+      var user = userCredential.user;
+      if (user != null) {
+        // print(user.uid);
+        user_id = user.uid;
+        email_id = mailController.text;
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const StorePage()));
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        showMessage(msg: 'User found for that email.');
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        showMessage(msg: 'Wrong password provided for that user');
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
+  showMessage({required String msg}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(msg),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('ok'))
+            ],
+          );
+        });
   }
 }

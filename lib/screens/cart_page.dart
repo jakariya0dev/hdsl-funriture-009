@@ -106,18 +106,8 @@ class _CartPageState extends State<CartPage> {
                                         MaterialButton(
                                           color: const Color(0xff880061),
                                           shape: const StadiumBorder(),
-                                          onPressed: () async {
-                                            FirebaseFirestore firestore =
-                                                FirebaseFirestore.instance;
-                                            await firestore
-                                                .collection('users-cart')
-                                                .doc(items[index]['id'])
-                                                .delete();
-                                            items.clear();
-                                            getCartData();
-                                            setState(() {});
-
-                                            // removeItemFromCart();
+                                          onPressed: () {
+                                            removeItemFromCart(index);
                                           },
                                           child: const Text(
                                             'Remove item',
@@ -172,5 +162,11 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  void removeItemFromCart() {}
+  void removeItemFromCart(int index) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    await firestore.collection('users-cart').doc(items[index]['id']).delete();
+    items.clear();
+    getCartData();
+    setState(() {});
+  }
 }

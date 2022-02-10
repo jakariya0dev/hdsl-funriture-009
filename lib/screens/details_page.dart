@@ -13,6 +13,7 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   int quantity = 1;
   late TextEditingController quantityController;
+  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,22 @@ class _DetailsPageState extends State<DetailsPage> {
           constraints: const BoxConstraints.expand(),
           child: Column(
             children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                BackButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                IconButton(
+                    onPressed: () {
+                      isSelected = true;
+                      addToWishlist();
+                      showMessage(msg: "Successfully added to wishlist");
+                      setState(() {});
+                    },
+                    icon: Icon(
+                        isSelected ? Icons.favorite : Icons.favorite_border))
+              ]),
               Container(
                 padding: const EdgeInsets.all(20),
                 color: Colors.white,
@@ -55,8 +72,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                 fontSize: 22, fontWeight: FontWeight.bold),
                           ),
                           OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                shape: StadiumBorder()),
                             onPressed: null,
-                            child: Text('★ 4.5'),
+                            child: Text('★ ${widget.productDetails['rating']}'),
                           )
                         ],
                       ),
@@ -123,7 +142,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         children: [
                           Text(
                             "৳ ${int.parse(widget.productDetails['price']) * quantity}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 25, fontWeight: FontWeight.bold),
                           ),
                           MaterialButton(
@@ -166,13 +185,27 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
+  void addToWishlist() {
+    // int price = int.parse(widget.productDetails['price'] * quantity);
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    firestore.collection('whish-list').add({
+      'catagory': widget.productDetails['catagory'],
+      'description': widget.productDetails['description'],
+      'image': widget.productDetails['image'],
+      'price': widget.productDetails['price'],
+      'rating': widget.productDetails['rating'],
+      'title': widget.productDetails['title'],
+      'quantity': quantityController.text
+    });
+  }
+
   showMessage({required String msg}) {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('warning!'.toUpperCase()),
-            content: Text(msg),
+            title: Text(msg),
             actions: [
               TextButton(
                   onPressed: () {
