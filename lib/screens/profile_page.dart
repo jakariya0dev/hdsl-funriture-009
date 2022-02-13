@@ -19,6 +19,10 @@ class _ProfilePageState extends State<ProfilePage> {
     getUserData();
   }
 
+  TextEditingController nameController = TextEditingController(text: user_name);
+  TextEditingController phoneController =
+      TextEditingController(text: phone_number);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,7 +114,9 @@ class _ProfilePageState extends State<ProfilePage> {
               MaterialButton(
                   minWidth: 100,
                   color: Colors.blue,
-                  onPressed: () {},
+                  onPressed: () {
+                    editProfile();
+                  },
                   child: const Text(
                     'Edit profile',
                     style: TextStyle(color: Colors.white),
@@ -134,5 +140,49 @@ class _ProfilePageState extends State<ProfilePage> {
     print(userData['email']);
     print(userData['phone']);
     print(userData['name']);
+  }
+
+  editProfile() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Update your profile'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(icon: Icon(Icons.person)),
+              ),
+              TextField(
+                  controller: phoneController,
+                  decoration: InputDecoration(icon: Icon(Icons.phone))),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {},
+            ),
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  updateProfile() {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    firestore
+        .collection('users')
+        .doc(email_id)
+        .update({'name': nameController.text, 'phone': phoneController.text});
   }
 }
