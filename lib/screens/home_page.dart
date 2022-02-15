@@ -18,6 +18,10 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   List items = [];
 
+  var collectionName = 'top';
+
+  TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -50,9 +54,16 @@ class _HomePageState extends State<HomePage> {
                   height: 10,
                 ),
                 TextField(
+                  controller: searchController,
                   decoration: InputDecoration(
                     hintText: 'Search here',
-                    suffixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        items.clear();
+                        getDataBySearch(collectionName);
+                      },
+                    ),
                     isDense: true,
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -87,6 +98,7 @@ class _HomePageState extends State<HomePage> {
                             shape: const StadiumBorder(),
                             onPressed: () {
                               selectedIndex = index;
+                              collectionName = catagory2[selectedIndex];
                               items.clear();
                               getData(catagory2[selectedIndex]);
                               setState(() {});
@@ -121,7 +133,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: EdgeInsets.only(right: 8),
                                 height: 180,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade400,
+                                  color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
@@ -216,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                               height: 10,
                             );
                           },
-                          itemCount: 5),
+                          itemCount: items.length),
                 )
               ],
             ),
@@ -228,6 +240,30 @@ class _HomePageState extends State<HomePage> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     var data = await firestore.collection(keyWord).get();
+
+    for (var doc in data.docs) {
+      setState(() {
+        Map map = {
+          'title': doc['title'],
+          'catagory': doc['catagory'],
+          'image': doc['image'],
+          'price': doc['price'],
+          'description': doc['description'],
+          'rating': doc['rating'],
+        };
+        items.add(map);
+      });
+      print(items);
+    }
+  }
+
+  getDataBySearch(String collectionName) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    var data = await firestore
+        .collection(collectionName)
+        .where('title', isEqualTo: searchController.text)
+        .get();
 
     for (var doc in data.docs) {
       setState(() {

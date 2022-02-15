@@ -19,12 +19,14 @@ class _ProfilePageState extends State<ProfilePage> {
     getUserData();
   }
 
-  TextEditingController nameController = TextEditingController(text: user_name);
-  TextEditingController phoneController =
-      TextEditingController(text: phone_number);
+  late TextEditingController nameController;
+  late TextEditingController phoneController;
 
   @override
   Widget build(BuildContext context) {
+    nameController = TextEditingController(text: user_name);
+    phoneController = TextEditingController(text: phone_number);
+
     return Scaffold(
         body: Container(
       constraints: const BoxConstraints.expand(),
@@ -133,13 +135,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
     var userData = await firestore.collection('users').doc(email_id).get();
 
-    // user_id = userData['email'];
     email_id = userData['email'];
     user_name = userData['name'];
     phone_number = userData['phone'];
-    print(userData['email']);
-    print(userData['phone']);
-    print(userData['name']);
+    setState(() {});
   }
 
   editProfile() {
@@ -163,7 +162,10 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               child: Text('Ok'),
-              onPressed: () {},
+              onPressed: () {
+                updateProfile();
+                Navigator.pop(context);
+              },
             ),
             TextButton(
               child: Text('Cancel'),
@@ -177,12 +179,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  updateProfile() {
+  updateProfile() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    firestore
-        .collection('users')
-        .doc(email_id)
-        .update({'name': nameController.text, 'phone': phoneController.text});
+    await firestore.collection('users').doc(email_id).update({
+      'name': nameController.text,
+      'phone': phoneController.text
+    }).then((value) => getUserData());
   }
 }

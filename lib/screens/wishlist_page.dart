@@ -45,7 +45,7 @@ class _WishListPageState extends State<WishListPage> {
                           padding: EdgeInsets.only(right: 8),
                           height: 180,
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
+                            color: Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
